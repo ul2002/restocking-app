@@ -3,8 +3,8 @@
 
 ### Requirement
 ```
- * "node": ">= 6.0.0",
- * "npm": ">= 3.0.0"
+ * "node": ">= 6.0.0", stable version
+ * "npm": ">= 3.0.0", stable version
 
  ```
 
@@ -20,12 +20,18 @@
 npm install
 
 ```
-
-# serve with hot reload at localhost:8080
+# buid the app
 ```
-npm run dev
+npm run build
 
 ```
+
+# serve with hot reload at localhost:5000
+```
+npm run start
+
+```
+you can check a demo here https://restocking.herokuapp.com/ 
 
 # Authors
   [Ulrich Ntella](https://www.linkedin.com/in/ulrichsoft/). Senior Sofware developer
