@@ -11,7 +11,7 @@
 ### Uses
 ```
 * Vue.js, with Vuetify and Vuelidate
-* Firebase
+* axios
 
 ```
 
@@ -31,6 +31,8 @@ npm run build
 npm run start
 
 ```
+this project depends of an api built with Laravel,you're free to set your own api_base_url in src/bootstrap.js. check https://github.com/ul2002/restocking-api and make sure that  api is ok
+
 you can check a demo here https://restocking.herokuapp.com/ 
 
 # Authors
