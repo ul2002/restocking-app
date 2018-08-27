@@ -1,12 +1,11 @@
 import Vue from 'vue'
-import * as firebase from 'firebase'
 import * as types from './types'
 
 function convertDataToItems(data) {
   const items = []
   for(let key in data) {
     items.push({
-      id: key,
+      id: data[key].id,
       name: data[key].name,
       quantity: data[key].quantity,
       amount: data[key].amount,
@@ -17,11 +16,11 @@ function convertDataToItems(data) {
   return items
 }
 
-function convertPayloadToItem(payload, userId) {
+function convertPayloadToItem(payload) {
   let quantity = (!payload.quantity || payload.quantity === '') ? 0 : parseInt(payload.quantity)
   let amount = (!payload.amount || payload.amount === '') ? 0 : parseInt(payload.amount)
   let status = payload.status
-  const item = {userId: userId, name: payload.name, quantity: quantity, amount: amount, status: status}
+  const item = {name: payload.name, quantity: quantity, amount: amount, status: status}
   return item
 }
 
@@ -82,57 +81,52 @@ export default {
     [types.FETCH_ITEMS]({commit}) {
       commit(types.SET_LOADING_STATE, true)
 
-      const user = firebase.auth().currentUser
+      axios.get(types.PRODUCTS).then(
+         function(response){
+            const items = convertDataToItems(response.data.items)
+            commit(types.SET_ITEMS, items)
+            commit(types.SET_LOADING_STATE, false)
+         }
 
-      firebase.database().ref('items').orderByChild('userId').once('value')
-        .then((data) => {
-          const items = convertDataToItems(data.val())
-          commit(types.SET_ITEMS, items)
-          commit(types.SET_LOADING_STATE, false)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+      ).catch(function(error){ console.log(error.message); })
     },
     [types.CREATE_ITEM]({commit}, payload) {
-      const userId = firebase.auth().currentUser.uid
-      const item = convertPayloadToItem(payload, userId)
-      item.id = firebase.database().ref('items').push(item).key
-      commit(types.ADD_ITEM, item)
+      const item = convertPayloadToItem(payload)
+
+      axios.post(types.PRODUCTS, item).then(
+         function(response){
+            item.id=response.data.id
+            commit(types.ADD_ITEM, item)
+         }
+
+      ).catch(function(error){ console.log(error.message); })
     },
     [types.DELETE_ITEM]({commit}, payload) {
-      firebase.database().ref('items').child(payload).remove()
-      commit(types.REMOVE_ITEM, payload)
+      axios.delete(types.PRODUCT+payload).then(
+         function(response){
+            commit(types.REMOVE_ITEM, payload)
+         }
+      ).catch(function(error){ console.log(error.message); })
+      
     },
     [types.UPDATE_ITEM]({commit}, payload) {
-      firebase.database().ref('items').child(payload.id).update({name: payload.name, quantity: payload.quantity, amount: payload.amount, status: payload.status})
-        .then(data => {
-          commit(types.REPLACE_ITEM, payload)
-        })
-        .catch(error => {
-          console.log(error)
-        })
+        const item = convertPayloadToItem(payload)
+        axios.put(types.PRODUCT+payload.id,item).then(
+         function(response){
+            commit(types.REPLACE_ITEM, payload)
+         }
+      ).catch(function(error){ console.log(error.message);})
     },
     [types.RESTOCK_ITEM]({commit}, payload) {
-      firebase.database().ref('items').child(payload.id).update({restock: 1})
-        .then(data => {
-          //commit(types.REPLACE_ITEM, payload)
-        })
-        .catch(error => {
-          console.log(error)
-        })
+        axios.put(types.PRODUCT+payload.id,{restock: 1}).then(
+         function(response){
+            //commit(types.REPLACE_ITEM, payload)
+         }
+      ).catch(function(error){ console.log(error.message);})
     },
     [types.ENABLE_EDIT_MODE]({commit}, payload) {
-      firebase.database().ref('items').child(payload).once('value')
-      	.then(data => {
-          const item = data.val()
-          item.id = payload
-          commit(types.SET_ITEM, item)
-          commit(types.SET_EDIT_MODE, true)
-        })
-        .catch(error => {
-          console.log(error)
-        })
+        commit(types.SET_ITEM, payload)
+        commit(types.SET_EDIT_MODE, true)
     },
     [types.DISABLE_EDIT_MODE]({commit}) {
       commit(types.SET_EDIT_MODE, false)

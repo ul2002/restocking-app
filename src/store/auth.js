@@ -1,4 +1,3 @@
-import * as firebase from 'firebase'
 import * as types from './types'
 
 const ADMIN = 'admin@restock.test'
@@ -48,20 +47,19 @@ export default {
       commit(types.CLEAR_AUTH_ERROR)
     },
     [types.SIGNIN]({commit}, payload) {
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-        .then((data) => {
-          commit(types.SET_USER, { id: data.uid, email: payload.email })
-          commit(types.SET_IS_ADMIN, payload.email==ADMIN)
-        })
-        .catch((error) => {
-          commit(types.SET_AUTH_ERROR, error)
-        })
+        axios.post(types.AUTH, payload).then(
+         function(response){
+            let data=response.data
+            commit(types.SET_USER, { id: data.id, email: payload.email })
+            commit(types.SET_IS_ADMIN, payload.email==ADMIN)
+         }
+
+      ).catch(function(error){ commit(types.SET_AUTH_ERROR, error.response.data) })
     },
     [types.AUTO_SIGNIN]({commit}, payload) {
       commit(types.SET_USER, { id: payload.uid, email: payload.email })
     },
     [types.SIGNOUT]({commit}) {
-      firebase.auth().signOut()
       commit(types.CLEAR_USER)
     }
   }

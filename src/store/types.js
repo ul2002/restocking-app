@@ -31,3 +31,7 @@ export const DISABLE_EDIT_MODE = 'disable_edit_mode'
 export const SET_EDIT_MODE = 'set_edit_mode'
 
 export const SET_LOADING_STATE = 'set_loading_state'
+
+export const PRODUCTS = 'products'
+export const PRODUCT = 'products/'
+export const AUTH = 'auth'

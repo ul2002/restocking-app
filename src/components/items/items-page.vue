@@ -46,7 +46,7 @@
             <v-btn icon class="mx-0" @click="restockItem(props.item.id)" v-if="isAdmin">
               <v-icon color="secondary">add_shopping_cart</v-icon>
             </v-btn>
-            <v-btn icon class="mx-0" @click="editItem(props.item.id)">
+            <v-btn icon class="mx-0" @click="editItem(props.item)">
               <v-icon color="secondary">edit</v-icon>
             </v-btn>
             <v-btn icon class="mx-0" @click="deleteItem(props.item.id)" v-if="isAdmin">
@@ -118,8 +118,8 @@ export default {
       this.showDialog = false
       this.$store.dispatch(DISABLE_EDIT_MODE)
     },
-    editItem(id) {
-      this.$store.dispatch(ENABLE_EDIT_MODE, id)
+    editItem(item) {
+      this.$store.dispatch(ENABLE_EDIT_MODE, item)
       this.showDialog = true
     },
     deleteItem(id) {

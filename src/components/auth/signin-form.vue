@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3 lg4 offset-lg4 v-if="hasSigninError">
         <v-alert type="error" :value="true" outline>
-          {{ signinError.message }}
+          {{ signinError }}
         </v-alert>
       </v-flex>
     </v-layout>
